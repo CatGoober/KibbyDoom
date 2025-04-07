@@ -514,6 +514,9 @@ const char *bgcastcall   = "BOSSBACK"; // Panel behind cast call
  * cph - updated for prboom */
 const char *savegamename = PROJECT_TARNAME"-savegame";
 
+// catgoober 4/07/25 for custom credits stuff via dehacked that doesn't override existing cheats
+const char *s_STSTR_DEHCUSTOM    = ""; // Empty String, For dehacked ^W^
+
 // end d_deh.h variable declarations
 // ====================================================================
 
@@ -827,6 +830,7 @@ static deh_strs deh_strlookup[] = {
   {&bgflat31,"BGFLAT31"},
   {&bgcastcall,"BGCASTCALL"},
   {&savegamename,"SAVEGAMENAME"},  // Ty 05/03/98
+  {&s_STSTR_DEHCUSTOM, "STSTR_DEHCUSTOM"}, 
 };
 
 static int deh_numstrlookup = sizeof(deh_strlookup) / sizeof(deh_strlookup[0]);
