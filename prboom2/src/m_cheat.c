@@ -140,6 +140,9 @@ static void cheat_script();
 // nyan
 static void cheat_nut();
 
+// kibby
+static void cheat_dehackedstring();
+
 //-----------------------------------------------------------------------------
 //
 // List of cheat codes, functions, and special argument indicators.
@@ -165,7 +168,7 @@ static void cheat_nut();
 
 cheatseq_t cheat[] = {
   CHEAT("idmus",      NULL,   "Change music",     cht_always, cheat_mus, -2, false),
-  CHEAT("idmusrr",    NULL,   NULL,               cht_always, cheat_musrr, 0, false),
+  CHEAT("idmusrr",    NULL,   "Random Song",      cht_always, cheat_musrr, 0, false), // catgoober 4/07/25 added a DEH name :3c
   CHEAT("idchoppers", NULL,   "Chainsaw",         not_demo, cheat_choppers, 0, false),
   CHEAT("iddqd",      NULL,   "God mode",         not_classic_demo,  cheat_god, 0, false),
   CHEAT("idkfa",      NULL,   "Ammo & Keys",      not_demo, cheat_kfa, 0, false),
@@ -182,8 +185,9 @@ cheatseq_t cheat[] = {
   CHEAT("idbeholdl",  NULL,   "Lite-Amp Goggles", cht_always, cheat_pw, pw_infrared, false),
   CHEAT("idbehold",   NULL,   "BEHOLD menu",      cht_always, cheat_behold, 0, false),
   CHEAT("idclev",     NULL,   "Level Warp",       not_demo | not_menu, cheat_clev, -2, false),
-  CHEAT("idclev",     NULL,   "Level Warp",       not_demo | not_menu, cheat_clev0, 0, false),
-  CHEAT("idmypos",    NULL,   NULL,               cht_always, cheat_mypos, 0, false),
+  CHEAT("idclev",     NULL,   "Level Warp",     not_demo | not_menu, cheat_clev0, 0, false),
+  CHEAT("idmypos",    NULL,   "mypos",               cht_always, cheat_mypos, 0, false), // catgoober 4/07/25 added a DEH name :3c
+  CHEAT("dehackedcheatpleaseoverridethis",    NULL,   "customstring", cht_always, cheat_dehackedstring, 0, false), // catgoober 4/07/25 added a cheat that displays a string to be edited by dehacked
   CHEAT("idrate",     NULL,   "Frame rate",       cht_always, cheat_rate, 0, false),
   // phares
   CHEAT("tntcomp",    NULL,   NULL,               not_demo, cheat_comp, -2, false),
@@ -279,6 +283,43 @@ cheatseq_t cheat[] = {
 
 //-----------------------------------------------------------------------------
 
+static void dsda_ChangeMusic(int epsd, int map, dboolean random, dboolean message)
+{
+  int musnum, muslump;
+  char *mapname;
+
+  // if IDMUS00 is pressed, reset to default map music
+  if (!random && (epsd == (gamemode == commercial) ? 1 : 0) && map == 0)
+  {
+    epsd = gameepisode;
+    map = gamemap;
+  }
+
+  idmusnum = -1;
+  dsda_MapMusic(&musnum, &muslump, epsd, map);
+  idmusnum = musnum; //jff 3/17/98 remember idmus number for restore
+
+  mapname = VANILLA_MAP_LUMP_NAME(epsd, map);
+
+  if (W_LumpNameExists(mapname))
+  {
+    if (message) doom_printf("%s: %s", s_STSTR_MUS, mapname);
+
+    if (muslump != -1)
+    {
+      S_ChangeMusInfoMusic(muslump, true);
+    }
+    else if (musnum != -1)
+    {
+      S_ChangeMusic(musnum, 1);
+    }
+  }
+  else
+  {
+    if (message) dsda_AddMessage(s_STSTR_NOMUS);
+  }
+}
+
 static void cheat_mus(buf)
 char buf[3];
 {
@@ -304,9 +345,29 @@ char buf[3];
   dsda_ChangeMusic(epsd, map, false, true);
 }
 
+static void M_PlayRandomMusic(dboolean cheat)
+{
+  int epsd = gameepisode;
+  int map = gamemap;
+
+  while (epsd == gameepisode && map == gamemap)
+  {
+    int random_map = S_RandomMusic();
+    epsd = (random_map / 10) % 10;
+    map = (gamemode == commercial) ? random_map : random_map % 10;
+  }
+
+  dsda_ChangeMusic(epsd, map, true, cheat);
+}
+
 static void cheat_musrr(void)
 {
-  S_PlayRandomMusic(true);
+  M_PlayRandomMusic(true);
+}
+
+void M_RandomMusic(void)
+{
+  M_PlayRandomMusic(false);
 }
 
 // 'choppers' invulnerability & chainsaw
@@ -370,7 +431,7 @@ static void cheat_god()
 void cheat_nut(void)
 {
 
-  if (raven) return;
+  //if (raven) return; // catgoob here, why the fuck?
 
   plyr->cheats ^= CF_NUT;
   if (plyr->cheats & CF_NUT)
@@ -1448,4 +1509,10 @@ static void cheat_script(char buf[3])
     snprintf(textBuffer, sizeof(textBuffer), "RUNNING SCRIPT %.2d", script);
     P_SetMessage(plyr, textBuffer, true);
   }
+}
+// catgoober 4/07/25 whatever this is
+void cheat_dehackedstring(void)
+{
+ if (s_STSTR_DEHCUSTOM == "") return;
+  dsda_AddMessage(s_STSTR_DEHCUSTOM);
 }
