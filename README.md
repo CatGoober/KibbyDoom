@@ -1,4 +1,6 @@
 <div align="center" markdown="1">
+    <p>okay this isn't technically Nyan Doom but I'm too lazy to change anything</p>
+    <p>eventually I'll be too lazy to update it and nyan doom will be more up to date anyway :3</p>
     <a href="https://github.com/andrikpowell/nyan-doom/"><img src="./prboom2/ICONS/nyan-doom.svg" alt="Nyan Doom Logo" width="200"/></a>
     <h1>Nyan Doom</h1>
     <h3>The most fuzzy, cuddly Doom port ever!</h3>
