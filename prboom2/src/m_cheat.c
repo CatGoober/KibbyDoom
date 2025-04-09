@@ -75,6 +75,8 @@
 #define allow_deh_cheats (dsda_IntConfig(dsda_config_deh_change_cheats) && !dsda_Flag(dsda_arg_nocheats))
 #define WHICH_CHEAT(x) (allow_deh_cheats ? (x)->deh_cheat : (x)->cheat)
 
+extern void dsda_ChangeMusic(int epsd, int map, dboolean random, dboolean message);
+
 //-----------------------------------------------------------------------------
 //
 // CHEAT SEQUENCE PACKAGE
@@ -282,43 +284,6 @@ cheatseq_t cheat[] = {
 };
 
 //-----------------------------------------------------------------------------
-
-static void dsda_ChangeMusic(int epsd, int map, dboolean random, dboolean message)
-{
-  int musnum, muslump;
-  char *mapname;
-
-  // if IDMUS00 is pressed, reset to default map music
-  if (!random && (epsd == (gamemode == commercial) ? 1 : 0) && map == 0)
-  {
-    epsd = gameepisode;
-    map = gamemap;
-  }
-
-  idmusnum = -1;
-  dsda_MapMusic(&musnum, &muslump, epsd, map);
-  idmusnum = musnum; //jff 3/17/98 remember idmus number for restore
-
-  mapname = VANILLA_MAP_LUMP_NAME(epsd, map);
-
-  if (W_LumpNameExists(mapname))
-  {
-    if (message) doom_printf("%s: %s", s_STSTR_MUS, mapname);
-
-    if (muslump != -1)
-    {
-      S_ChangeMusInfoMusic(muslump, true);
-    }
-    else if (musnum != -1)
-    {
-      S_ChangeMusic(musnum, 1);
-    }
-  }
-  else
-  {
-    if (message) dsda_AddMessage(s_STSTR_NOMUS);
-  }
-}
 
 static void cheat_mus(buf)
 char buf[3];
