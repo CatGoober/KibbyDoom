@@ -75,8 +75,6 @@
 #define allow_deh_cheats (dsda_IntConfig(dsda_config_deh_change_cheats) && !dsda_Flag(dsda_arg_nocheats))
 #define WHICH_CHEAT(x) (allow_deh_cheats ? (x)->deh_cheat : (x)->cheat)
 
-extern void dsda_ChangeMusic(int epsd, int map, dboolean random, dboolean message);
-
 //-----------------------------------------------------------------------------
 //
 // CHEAT SEQUENCE PACKAGE
@@ -284,6 +282,8 @@ cheatseq_t cheat[] = {
 };
 
 //-----------------------------------------------------------------------------
+
+extern void dsda_ChangeMusic(int epsd, int map, dboolean random, dboolean message);
 
 static void cheat_mus(buf)
 char buf[3];
