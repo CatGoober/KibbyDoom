@@ -3108,7 +3108,7 @@ setup_menu_t gen_audio_settings[] = {
   { "Mute When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
   EMPTY_LINE,
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
-  { "Limit Overlapping for Same-Sound", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_active },
+  { "Limit Overlapping for Same-Sound", S_YESNO, m_conf, G_X, dsda_config_parallel_sfx_active },
   { "Number of Overlapping Sounds", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
   { "Sound Replay Window (Tics)", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
   EMPTY_LINE,
@@ -3808,7 +3808,7 @@ static void M_BuildLevelTable(void)
     if (map->best_skill) {
       dsda_StringPrintF(&m_text, "%d", map->best_skill);
       entry->m_text = m_text.string;
-      if (map->best_skill == 5)
+      if (map->best_skill == num_skills - uvplus)
         entry->m_flags |= S_TC_SEL;
     }
     else {
@@ -3826,7 +3826,7 @@ static void M_BuildLevelTable(void)
     if (map->best_skill) {
       dsda_StringPrintF(&m_text, "%d/%d", map->best_kills, map->max_kills);
       entry->m_text = m_text.string;
-      if (map->best_kills == map->max_kills)
+      if (map->best_kills >= map->max_kills)
         entry->m_flags |= S_TC_SEL;
     }
     else {
@@ -3844,7 +3844,7 @@ static void M_BuildLevelTable(void)
     if (map->best_skill) {
       dsda_StringPrintF(&m_text, "%d/%d", map->best_items, map->max_items);
       entry->m_text = m_text.string;
-      if (map->best_items == map->max_items)
+      if (map->best_items >= map->max_items)
         entry->m_flags |= S_TC_SEL;
     }
     else {
@@ -3862,7 +3862,7 @@ static void M_BuildLevelTable(void)
     if (map->best_skill) {
       dsda_StringPrintF(&m_text, "%d/%d", map->best_secrets, map->max_secrets);
       entry->m_text = m_text.string;
-      if (map->best_secrets == map->max_secrets)
+      if (map->best_secrets >= map->max_secrets)
         entry->m_flags |= S_TC_SEL;
     }
     else {
@@ -4697,7 +4697,7 @@ dboolean M_ConsoleOpen(void)
   return menuactive && currentMenu == &dsda_ConsoleDef;
 }
 
-static void M_LeaveSetupMenu(void)
+void M_LeaveSetupMenu(void)
 {
   M_SetSetupMenuItemOn(set_menu_itemon);
   setup_active = false;
@@ -6107,9 +6107,6 @@ dboolean M_Responder(event_t* ev) {
   // Don't eat the keypress in this case. See sf bug #1843280.
   if (dsda_InputActivated(dsda_input_screenshot))
     I_QueueScreenshot();
-
-  if (heretic && F_BlockingInput())
-    return false;
 
   if (!menuactive)
   {
